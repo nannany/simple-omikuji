@@ -4,7 +4,7 @@ import Browser
 import Browser.Navigation as Nav
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
+import Html.Events exposing (onClick, onInput)
 import Url
 
 
@@ -54,6 +54,7 @@ type Msg
     = LinkClicked Browser.UrlRequest
     | UrlChanged Url.Url
     | PlusClicked
+    | ChangeName String Int
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -71,6 +72,9 @@ update msg model =
             ( { model | url = url }, Cmd.none )
 
         PlusClicked ->
+            ( { model | records = Record True "" :: model.records }, Cmd.none )
+
+        ChangeName str index ->
             ( { model | records = Record True "" :: model.records }, Cmd.none )
 
 
@@ -94,17 +98,22 @@ view model =
         [ text "Click +, add user."
         , br [] []
         , button [ onClick PlusClicked ] [ text "+" ]
-
-        -- , div [] ( showList model.records)
-        , input [ type_ "checkbox", checked True ] []
-        , text "name"
+        , p [] (showList model.records)
         ]
     }
 
 
+showList : List Record -> List (Html Msg)
+showList records =
+    List.indexedMap (\index record -> checkbox record index) records
 
--- showList : List Record -> List (Html Msg)
--- showList records =
+
+checkbox : Record -> Int -> Html Msg
+checkbox record index =
+    div []
+        [ input [ type_ "checkbox", checked record.checked ] []
+        , input [ type_ "text", placeholder "name", onInput (\s -> ChangeName s index)] []
+        ]
 
 
 viewLink : String -> Html msg
