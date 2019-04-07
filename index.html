@@ -4903,9 +4903,9 @@ var author$project$Main$LinkClicked = function (a) {
 var author$project$Main$UrlChanged = function (a) {
 	return {$: 'UrlChanged', a: a};
 };
-var author$project$Main$Model = F4(
-	function (records, key, url, page) {
-		return {key: key, page: page, records: records, url: url};
+var author$project$Main$Model = F5(
+	function (records, roles, key, url, page) {
+		return {key: key, page: page, records: records, roles: roles, url: url};
 	});
 var author$project$Main$TopPage = {$: 'TopPage'};
 var author$project$Main$NotFound = {$: 'NotFound'};
@@ -6232,7 +6232,14 @@ var author$project$Main$init = F3(
 		return A2(
 			author$project$Main$goTo,
 			author$project$Route$parse(url),
-			A4(author$project$Main$Model, _List_Nil, key, url, author$project$Main$TopPage));
+			A5(
+				author$project$Main$Model,
+				_List_Nil,
+				_List_fromArray(
+					['S', 'P']),
+				key,
+				url,
+				author$project$Main$TopPage));
 	});
 var elm$core$Platform$Sub$batch = _Platform_batch;
 var elm$core$Platform$Sub$none = elm$core$Platform$Sub$batch(_List_Nil);
@@ -10039,7 +10046,8 @@ var author$project$Main$update = F2(
 							records: A2(
 								elm$core$List$cons,
 								A2(author$project$Main$Record, true, ''),
-								model.records)
+								model.records),
+							roles: (elm$core$List$length(model.records) <= 2) ? A2(elm$core$List$cons, 'D', model.roles) : model.roles
 						}),
 					elm$core$Platform$Cmd$none);
 			case 'ChangeName':

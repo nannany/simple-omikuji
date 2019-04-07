@@ -32,6 +32,7 @@ main =
 
 type alias Model =
     { records : List Record
+    , roles : List String
     , key : Nav.Key
     , url : Url.Url
     , page : Page
@@ -52,7 +53,7 @@ type alias Record =
 
 init : () -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
 init flags url key =
-    Model [] key url TopPage
+    Model [] [ "S", "P" ] key url TopPage
         |> goTo (Route.parse url)
 
 
@@ -84,7 +85,17 @@ update msg model =
             goTo (Route.parse url) model
 
         PlusClicked ->
-            ( { model | records = Record True "" :: model.records }, Cmd.none )
+            ( { model
+                | records = Record True "" :: model.records
+                , roles =
+                    if List.length model.records <= 2 then
+                        "D" :: model.roles
+
+                    else
+                        model.roles
+              }
+            , Cmd.none
+            )
 
         ChangeName str index ->
             ( { model | records = alterRecordName str index model.records }, Cmd.none )
