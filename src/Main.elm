@@ -4,7 +4,8 @@ import Browser
 import Browser.Navigation as Nav
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick, onInput , onCheck)
+import Html.Events exposing (onCheck, onClick, onInput)
+import Route exposing (Route)
 import Url
 
 
@@ -32,7 +33,14 @@ type alias Model =
     { records : List Record
     , key : Nav.Key
     , url : Url.Url
+    , page : Page
     }
+
+
+type Page
+    = NotFound
+    | TopPage
+    | ResultPage
 
 
 type alias Record =
@@ -43,7 +51,8 @@ type alias Record =
 
 init : () -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
 init flags url key =
-    ( Model [] key url, Cmd.none )
+    Model [] key url TopPage
+        |> goTo (Route.parse url)
 
 
 
@@ -54,8 +63,8 @@ type Msg
     = LinkClicked Browser.UrlRequest
     | UrlChanged Url.Url
     | PlusClicked
-    | ChangeName String Int
-    | ChangeChecked Bool Int
+    | ChangeName String Int -- チェックボックスのテキストを変更したときに発動
+    | ChangeChecked Bool Int -- チェックボックスのチェックを変更したときに発動
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -81,6 +90,7 @@ update msg model =
         ChangeChecked bool index ->
             ( { model | records = alterRecordChecked bool index model.records }, Cmd.none )
 
+
 alterRecordName : String -> Int -> List Record -> List Record
 alterRecordName str index targetLists =
     List.indexedMap
@@ -93,6 +103,7 @@ alterRecordName str index targetLists =
         )
         targetLists
 
+
 alterRecordChecked : Bool -> Int -> List Record -> List Record
 alterRecordChecked bool index targetLists =
     List.indexedMap
@@ -104,6 +115,24 @@ alterRecordChecked bool index targetLists =
                 r
         )
         targetLists
+
+
+
+-- routing
+
+
+goTo : Maybe Route -> Model -> ( Model, Cmd Msg )
+goTo maybeRoute model =
+    case maybeRoute of
+        Nothing ->
+            ( { model | page = NotFound }, Cmd.none )
+
+        Just Route.Top ->
+            ( { model | page = TopPage }, Cmd.none )
+
+        Just Route.Result ->
+            ( { model | page = ResultPage }, Cmd.none )
+
 
 
 --subscriptions
@@ -122,12 +151,31 @@ view : Model -> Browser.Document Msg
 view model =
     { title = "omikuji"
     , body =
-        [ text "Click +, add user."
-        , br [] []
-        , button [ onClick PlusClicked ] [ text "+" ]
-        , p [] (showList model.records)
-        ]
+        case model.page of
+            NotFound ->
+                viewNotFound
+
+            TopPage ->
+                viewTopPage model
+
+            ResultPage ->
+                viewNotFound
     }
+
+
+viewNotFound : List (Html Msg)
+viewNotFound =
+    [ h1 [ style "color" "red" ] [ text "404 Not Found!" ] ]
+
+
+viewTopPage : Model -> List (Html Msg)
+viewTopPage model =
+    [ h1 [] [ text "omikuji application" ]
+    , text "Click +, add user."
+    , br [] []
+    , button [ onClick PlusClicked ] [ text "+" ]
+    , p [] (showList model.records)
+    ]
 
 
 showList : List Record -> List (Html Msg)
@@ -138,11 +186,6 @@ showList records =
 checkbox : Record -> Int -> Html Msg
 checkbox record index =
     div []
-        [ input [ type_ "checkbox", checked record.checked , onCheck (\b -> ChangeChecked b index)] []
+        [ input [ type_ "checkbox", checked record.checked, onCheck (\b -> ChangeChecked b index) ] []
         , input [ type_ "text", placeholder "name", onInput (\s -> ChangeName s index) ] []
         ]
-
-
-viewLink : String -> Html msg
-viewLink path =
-    li [] [ a [ href path ] [ text path ] ]
