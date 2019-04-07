@@ -9985,6 +9985,27 @@ var elm$url$Url$toString = function (url) {
 					_Utils_ap(http, url.host)),
 				url.path)));
 };
+var elm$url$Url$Builder$toQueryPair = function (_n0) {
+	var key = _n0.a;
+	var value = _n0.b;
+	return key + ('=' + value);
+};
+var elm$url$Url$Builder$toQuery = function (parameters) {
+	if (!parameters.b) {
+		return '';
+	} else {
+		return '?' + A2(
+			elm$core$String$join,
+			'&',
+			A2(elm$core$List$map, elm$url$Url$Builder$toQueryPair, parameters));
+	}
+};
+var elm$url$Url$Builder$relative = F2(
+	function (pathSegments, parameters) {
+		return _Utils_ap(
+			A2(elm$core$String$join, '/', pathSegments),
+			elm$url$Url$Builder$toQuery(parameters));
+	});
 var author$project$Main$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
@@ -10006,11 +10027,10 @@ var author$project$Main$update = F2(
 				}
 			case 'UrlChanged':
 				var url = msg.a;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{url: url}),
-					elm$core$Platform$Cmd$none);
+				return A2(
+					author$project$Main$goTo,
+					author$project$Route$parse(url),
+					model);
 			case 'PlusClicked':
 				return _Utils_Tuple2(
 					_Utils_update(
@@ -10032,7 +10052,7 @@ var author$project$Main$update = F2(
 							records: A3(author$project$Main$alterRecordName, str, index, model.records)
 						}),
 					elm$core$Platform$Cmd$none);
-			default:
+			case 'ChangeChecked':
 				var bool = msg.a;
 				var index = msg.b;
 				return _Utils_Tuple2(
@@ -10042,6 +10062,18 @@ var author$project$Main$update = F2(
 							records: A3(author$project$Main$alterRecordChecked, bool, index, model.records)
 						}),
 					elm$core$Platform$Cmd$none);
+			default:
+				var key = msg.a;
+				return _Utils_Tuple2(
+					model,
+					A2(
+						elm$browser$Browser$Navigation$pushUrl,
+						key,
+						A2(
+							elm$url$Url$Builder$relative,
+							_List_fromArray(
+								['result']),
+							_List_Nil)));
 		}
 	});
 var elm$html$Html$h1 = _VirtualDom_node('h1');
@@ -10058,6 +10090,15 @@ var author$project$Main$viewNotFound = _List_fromArray(
 				elm$html$Html$text('404 Not Found!')
 			]))
 	]);
+var author$project$Main$viewResultPage = function (model) {
+	return _List_fromArray(
+		[
+			elm$html$Html$text('result')
+		]);
+};
+var author$project$Main$GoToResult = function (a) {
+	return {$: 'GoToResult', a: a};
+};
 var author$project$Main$PlusClicked = {$: 'PlusClicked'};
 var author$project$Main$ChangeChecked = F2(
 	function (a, b) {
@@ -10190,7 +10231,18 @@ var author$project$Main$viewTopPage = function (model) {
 			A2(
 			elm$html$Html$p,
 			_List_Nil,
-			author$project$Main$showList(model.records))
+			author$project$Main$showList(model.records)),
+			A2(
+			elm$html$Html$button,
+			_List_fromArray(
+				[
+					elm$html$Html$Events$onClick(
+					author$project$Main$GoToResult(model.key))
+				]),
+			_List_fromArray(
+				[
+					elm$html$Html$text('show result')
+				]))
 		]);
 };
 var author$project$Main$view = function (model) {
@@ -10203,7 +10255,7 @@ var author$project$Main$view = function (model) {
 				case 'TopPage':
 					return author$project$Main$viewTopPage(model);
 				default:
-					return author$project$Main$viewNotFound;
+					return author$project$Main$viewResultPage(model);
 			}
 		}(),
 		title: 'omikuji'
@@ -10213,7 +10265,7 @@ var elm$browser$Browser$application = _Browser_application;
 var author$project$Main$main = elm$browser$Browser$application(
 	{init: author$project$Main$init, onUrlChange: author$project$Main$UrlChanged, onUrlRequest: author$project$Main$LinkClicked, subscriptions: author$project$Main$subscriptions, update: author$project$Main$update, view: author$project$Main$view});
 _Platform_export({'Main':{'init':author$project$Main$main(
-	elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.0"},"types":{"message":"Main.Msg","aliases":{"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"}},"unions":{"Main.Msg":{"args":[],"tags":{"LinkClicked":["Browser.UrlRequest"],"UrlChanged":["Url.Url"],"PlusClicked":[],"ChangeName":["String.String","Basics.Int"],"ChangeChecked":["Basics.Bool","Basics.Int"]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}}}}})}});}(this));
+	elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.0"},"types":{"message":"Main.Msg","aliases":{"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"}},"unions":{"Main.Msg":{"args":[],"tags":{"LinkClicked":["Browser.UrlRequest"],"UrlChanged":["Url.Url"],"PlusClicked":[],"ChangeName":["String.String","Basics.Int"],"ChangeChecked":["Basics.Bool","Basics.Int"],"GoToResult":["Browser.Navigation.Key"]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}},"Browser.Navigation.Key":{"args":[],"tags":{"Key":[]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}}}}})}});}(this));
 
 var app = Elm.Main.init({ node: document.getElementById("elm-f0111bc4e658d0f98db96260c16f7e49") });
 if (document.getElementById("elm-f0111bc4e658d0f98db96260c16f7e49"))

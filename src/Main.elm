@@ -7,6 +7,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onClick, onInput)
 import Route exposing (Route)
 import Url
+import Url.Builder exposing (relative)
 
 
 
@@ -65,6 +66,7 @@ type Msg
     | PlusClicked
     | ChangeName String Int -- チェックボックスのテキストを変更したときに発動
     | ChangeChecked Bool Int -- チェックボックスのチェックを変更したときに発動
+    | GoToResult Nav.Key
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -79,7 +81,7 @@ update msg model =
                     ( model, Nav.load href )
 
         UrlChanged url ->
-            ( { model | url = url }, Cmd.none )
+            goTo (Route.parse url) model
 
         PlusClicked ->
             ( { model | records = Record True "" :: model.records }, Cmd.none )
@@ -89,6 +91,9 @@ update msg model =
 
         ChangeChecked bool index ->
             ( { model | records = alterRecordChecked bool index model.records }, Cmd.none )
+
+        GoToResult key ->
+            ( model, Nav.pushUrl key (relative [ "result" ] []) )
 
 
 alterRecordName : String -> Int -> List Record -> List Record
@@ -159,7 +164,7 @@ view model =
                 viewTopPage model
 
             ResultPage ->
-                viewNotFound
+                viewResultPage model
     }
 
 
@@ -175,7 +180,13 @@ viewTopPage model =
     , br [] []
     , button [ onClick PlusClicked ] [ text "+" ]
     , p [] (showList model.records)
+    , button [ onClick (GoToResult model.key) ] [ text "show result" ]
     ]
+
+
+viewResultPage : Model -> List (Html Msg)
+viewResultPage model =
+    [ text "result" ]
 
 
 showList : List Record -> List (Html Msg)
