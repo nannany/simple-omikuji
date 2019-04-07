@@ -4,7 +4,7 @@ import Browser
 import Browser.Navigation as Nav
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick, onInput)
+import Html.Events exposing (onClick, onInput , onCheck)
 import Url
 
 
@@ -55,6 +55,7 @@ type Msg
     | UrlChanged Url.Url
     | PlusClicked
     | ChangeName String Int
+    | ChangeChecked Bool Int
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -75,8 +76,34 @@ update msg model =
             ( { model | records = Record True "" :: model.records }, Cmd.none )
 
         ChangeName str index ->
-            ( { model | records = Record True "" :: model.records }, Cmd.none )
+            ( { model | records = alterRecordName str index model.records }, Cmd.none )
 
+        ChangeChecked bool index ->
+            ( { model | records = alterRecordChecked bool index model.records }, Cmd.none )
+
+alterRecordName : String -> Int -> List Record -> List Record
+alterRecordName str index targetLists =
+    List.indexedMap
+        (\i r ->
+            if i == index then
+                Record r.checked str
+
+            else
+                r
+        )
+        targetLists
+
+alterRecordChecked : Bool -> Int -> List Record -> List Record
+alterRecordChecked bool index targetLists =
+    List.indexedMap
+        (\i r ->
+            if i == index then
+                Record bool r.name
+
+            else
+                r
+        )
+        targetLists
 
 
 --subscriptions
@@ -105,14 +132,14 @@ view model =
 
 showList : List Record -> List (Html Msg)
 showList records =
-    List.indexedMap (\index record -> checkbox record index) records
+    List.indexedMap (\i r -> checkbox r i) records
 
 
 checkbox : Record -> Int -> Html Msg
 checkbox record index =
     div []
-        [ input [ type_ "checkbox", checked record.checked ] []
-        , input [ type_ "text", placeholder "name", onInput (\s -> ChangeName s index)] []
+        [ input [ type_ "checkbox", checked record.checked , onCheck (\b -> ChangeChecked b index)] []
+        , input [ type_ "text", placeholder "name", onInput (\s -> ChangeName s index) ] []
         ]
 
 

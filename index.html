@@ -5382,6 +5382,26 @@ var author$project$Main$Record = F2(
 	function (checked, name) {
 		return {checked: checked, name: name};
 	});
+var author$project$Main$alterRecordChecked = F3(
+	function (bool, index, targetLists) {
+		return A2(
+			elm$core$List$indexedMap,
+			F2(
+				function (i, r) {
+					return _Utils_eq(i, index) ? A2(author$project$Main$Record, bool, r.name) : r;
+				}),
+			targetLists);
+	});
+var author$project$Main$alterRecordName = F3(
+	function (str, index, targetLists) {
+		return A2(
+			elm$core$List$indexedMap,
+			F2(
+				function (i, r) {
+					return _Utils_eq(i, index) ? A2(author$project$Main$Record, r.checked, str) : r;
+				}),
+			targetLists);
+	});
 var elm$browser$Browser$External = function (a) {
 	return {$: 'External', a: a};
 };
@@ -9744,22 +9764,33 @@ var author$project$Main$update = F2(
 								model.records)
 						}),
 					elm$core$Platform$Cmd$none);
-			default:
+			case 'ChangeName':
 				var str = msg.a;
 				var index = msg.b;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
 						{
-							records: A2(
-								elm$core$List$cons,
-								A2(author$project$Main$Record, true, ''),
-								model.records)
+							records: A3(author$project$Main$alterRecordName, str, index, model.records)
+						}),
+					elm$core$Platform$Cmd$none);
+			default:
+				var bool = msg.a;
+				var index = msg.b;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							records: A3(author$project$Main$alterRecordChecked, bool, index, model.records)
 						}),
 					elm$core$Platform$Cmd$none);
 		}
 	});
 var author$project$Main$PlusClicked = {$: 'PlusClicked'};
+var author$project$Main$ChangeChecked = F2(
+	function (a, b) {
+		return {$: 'ChangeChecked', a: a, b: b};
+	});
 var author$project$Main$ChangeName = F2(
 	function (a, b) {
 		return {$: 'ChangeName', a: a, b: b};
@@ -9776,6 +9807,22 @@ var elm$html$Html$Attributes$boolProperty = F2(
 var elm$html$Html$Attributes$checked = elm$html$Html$Attributes$boolProperty('checked');
 var elm$html$Html$Attributes$placeholder = elm$html$Html$Attributes$stringProperty('placeholder');
 var elm$html$Html$Attributes$type_ = elm$html$Html$Attributes$stringProperty('type');
+var elm$json$Json$Decode$at = F2(
+	function (fields, decoder) {
+		return A3(elm$core$List$foldr, elm$json$Json$Decode$field, decoder, fields);
+	});
+var elm$json$Json$Decode$bool = _Json_decodeBool;
+var elm$html$Html$Events$targetChecked = A2(
+	elm$json$Json$Decode$at,
+	_List_fromArray(
+		['target', 'checked']),
+	elm$json$Json$Decode$bool);
+var elm$html$Html$Events$onCheck = function (tagger) {
+	return A2(
+		elm$html$Html$Events$on,
+		'change',
+		A2(elm$json$Json$Decode$map, tagger, elm$html$Html$Events$targetChecked));
+};
 var elm$html$Html$Events$alwaysStop = function (x) {
 	return _Utils_Tuple2(x, true);
 };
@@ -9788,10 +9835,6 @@ var elm$html$Html$Events$stopPropagationOn = F2(
 			elm$virtual_dom$VirtualDom$on,
 			event,
 			elm$virtual_dom$VirtualDom$MayStopPropagation(decoder));
-	});
-var elm$json$Json$Decode$at = F2(
-	function (fields, decoder) {
-		return A3(elm$core$List$foldr, elm$json$Json$Decode$field, decoder, fields);
 	});
 var elm$html$Html$Events$targetValue = A2(
 	elm$json$Json$Decode$at,
@@ -9819,7 +9862,11 @@ var author$project$Main$checkbox = F2(
 					_List_fromArray(
 						[
 							elm$html$Html$Attributes$type_('checkbox'),
-							elm$html$Html$Attributes$checked(record.checked)
+							elm$html$Html$Attributes$checked(record.checked),
+							elm$html$Html$Events$onCheck(
+							function (b) {
+								return A2(author$project$Main$ChangeChecked, b, index);
+							})
 						]),
 					_List_Nil),
 					A2(
@@ -9840,8 +9887,8 @@ var author$project$Main$showList = function (records) {
 	return A2(
 		elm$core$List$indexedMap,
 		F2(
-			function (index, record) {
-				return A2(author$project$Main$checkbox, record, index);
+			function (i, r) {
+				return A2(author$project$Main$checkbox, r, i);
 			}),
 		records);
 };
@@ -9874,7 +9921,7 @@ var elm$browser$Browser$application = _Browser_application;
 var author$project$Main$main = elm$browser$Browser$application(
 	{init: author$project$Main$init, onUrlChange: author$project$Main$UrlChanged, onUrlRequest: author$project$Main$LinkClicked, subscriptions: author$project$Main$subscriptions, update: author$project$Main$update, view: author$project$Main$view});
 _Platform_export({'Main':{'init':author$project$Main$main(
-	elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.0"},"types":{"message":"Main.Msg","aliases":{"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"}},"unions":{"Main.Msg":{"args":[],"tags":{"LinkClicked":["Browser.UrlRequest"],"UrlChanged":["Url.Url"],"PlusClicked":[],"ChangeName":["String.String","Basics.Int"]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}}}}})}});}(this));
+	elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.0"},"types":{"message":"Main.Msg","aliases":{"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"}},"unions":{"Main.Msg":{"args":[],"tags":{"LinkClicked":["Browser.UrlRequest"],"UrlChanged":["Url.Url"],"PlusClicked":[],"ChangeName":["String.String","Basics.Int"],"ChangeChecked":["Basics.Bool","Basics.Int"]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}}}}})}});}(this));
 
 var app = Elm.Main.init({ node: document.getElementById("elm-f0111bc4e658d0f98db96260c16f7e49") });
 if (document.getElementById("elm-f0111bc4e658d0f98db96260c16f7e49"))
