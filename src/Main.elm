@@ -195,6 +195,7 @@ viewTopPage model =
     ]
 
 
+-- resultページ表示用のview
 viewResultPage : Model -> List (Html Msg)
 viewResultPage model =
     [ h1 [] [ text "Result" ]
@@ -204,6 +205,7 @@ viewResultPage model =
     ]
 
 
+-- resultページにて結果の表を表示するためのメソッド
 showTableData : List Record -> List String -> List (Html Msg)
 showTableData nameList roleList =
     List.map2 Tuple.pair nameList roleList
