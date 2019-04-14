@@ -6,6 +6,8 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onClick, onInput)
 import Route exposing (Route)
+import Task
+import Time exposing (..)
 import Url
 import Url.Builder exposing (relative)
 
@@ -67,7 +69,8 @@ type Msg
     | PlusClicked
     | ChangeName String Int -- チェックボックスのテキストを変更したときに発動
     | ChangeChecked Bool Int -- チェックボックスのチェックを変更したときに発動
-    | GoToResult Nav.Key
+    | ClickResult
+    | GoToResult Time.Posix
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -103,8 +106,11 @@ update msg model =
         ChangeChecked bool index ->
             ( { model | records = alterRecordChecked bool index model.records }, Cmd.none )
 
-        GoToResult key ->
-            ( model, Nav.pushUrl key (relative [ "result" ] []) )
+        ClickResult ->
+            ( model, Task.perform GoToResult Time.now )
+
+        GoToResult time ->
+            ( model, Nav.pushUrl model.key (relative [ "result?seed=" ++ String.fromInt (Time.posixToMillis time) ] []) )
 
 
 alterRecordName : String -> Int -> List Record -> List Record
@@ -191,11 +197,14 @@ viewTopPage model =
     , br [] []
     , button [ onClick PlusClicked ] [ text "+" ]
     , p [] (showList model.records)
-    , button [ onClick (GoToResult model.key) ] [ text "show result" ]
+    , button [ onClick ClickResult ] [ text "show result" ]
     ]
 
 
+
 -- resultページ表示用のview
+
+
 viewResultPage : Model -> List (Html Msg)
 viewResultPage model =
     [ h1 [] [ text "Result" ]
@@ -205,12 +214,15 @@ viewResultPage model =
     ]
 
 
+
 -- resultページにて結果の表を表示するためのメソッド
+
+
 showTableData : List Record -> List String -> List (Html Msg)
 showTableData nameList roleList =
     List.map2 Tuple.pair nameList roleList
         |> List.map (\t -> tr [] [ td [] [ text (Tuple.first t).name ], td [] [ text (Tuple.second t) ] ])
-        |>  (::) (tr [] [th [] [ text "name"], th [] [text "role"]])  
+        |> (::) (tr [] [ th [] [ text "name" ], th [] [ text "role" ] ])
 
 
 showList : List Record -> List (Html Msg)
