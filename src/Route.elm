@@ -1,12 +1,13 @@
 module Route exposing (Route(..), parse, parser)
 
 import Url exposing (Url)
-import Url.Parser exposing (Parser, map, oneOf, s, top)
+import Url.Parser exposing ((<?>), Parser, map, oneOf, s, top)
+import Url.Parser.Query as Q
 
 
 type Route
     = Top
-    | Result
+    | Result (Maybe Int)
 
 
 parse : Url -> Maybe Route
@@ -18,5 +19,5 @@ parser : Parser (Route -> a) a
 parser =
     oneOf
         [ map Top top
-        , map Result (s "result")
+        , map Result (s "result" <?> Q.int "seed")
         ]

@@ -5,6 +5,8 @@ import Browser.Navigation as Nav
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onClick, onInput)
+import Random exposing (Seed, initialSeed)
+import Random.List exposing (shuffle)
 import Route exposing (Route)
 import Task
 import Time exposing (..)
@@ -152,8 +154,14 @@ goTo maybeRoute model =
         Just Route.Top ->
             ( { model | page = TopPage }, Cmd.none )
 
-        Just Route.Result ->
-            ( { model | page = ResultPage }, Cmd.none )
+        Just (Route.Result seed) ->
+            ( { model | page = ResultPage, roles = shuffleRole seed model.roles }, Cmd.none )
+
+
+shuffleRole : Maybe Int -> List String -> List String
+shuffleRole seed srcList =
+    Random.step (shuffle srcList) (initialSeed (Maybe.withDefault 0 seed))
+        |> Tuple.first
 
 
 
