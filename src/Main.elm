@@ -227,9 +227,13 @@ viewResultPage model =
 
 
 showTableData : List Record -> List String -> List (Html Msg)
-showTableData nameList roleList =
+showTableData recordList roleList =
+    let 
+        nameList = List.filter (\record -> record.checked) recordList
+                    |> List.map (\record -> record.name) 
+    in 
     List.map2 Tuple.pair nameList roleList
-        |> List.map (\t -> tr [] [ td [] [ text (Tuple.first t).name ], td [] [ text (Tuple.second t) ] ])
+        |> List.map (\t -> tr [] [ td [] [ text (Tuple.first t) ], td [] [ text (Tuple.second t) ] ])
         |> (::) (tr [] [ th [] [ text "name" ], th [] [ text "role" ] ])
 
 
