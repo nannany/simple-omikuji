@@ -10098,10 +10098,83 @@ var author$project$Main$viewNotFound = _List_fromArray(
 				elm$html$Html$text('404 Not Found!')
 			]))
 	]);
+var elm$core$Tuple$pair = F2(
+	function (a, b) {
+		return _Utils_Tuple2(a, b);
+	});
+var elm$html$Html$td = _VirtualDom_node('td');
+var elm$html$Html$th = _VirtualDom_node('th');
+var elm$html$Html$tr = _VirtualDom_node('tr');
+var author$project$Main$showTableData = F2(
+	function (nameList, roleList) {
+		return A2(
+			elm$core$List$cons,
+			A2(
+				elm$html$Html$tr,
+				_List_Nil,
+				_List_fromArray(
+					[
+						A2(
+						elm$html$Html$th,
+						_List_Nil,
+						_List_fromArray(
+							[
+								elm$html$Html$text('name')
+							])),
+						A2(
+						elm$html$Html$th,
+						_List_Nil,
+						_List_fromArray(
+							[
+								elm$html$Html$text('role')
+							]))
+					])),
+			A2(
+				elm$core$List$map,
+				function (t) {
+					return A2(
+						elm$html$Html$tr,
+						_List_Nil,
+						_List_fromArray(
+							[
+								A2(
+								elm$html$Html$td,
+								_List_Nil,
+								_List_fromArray(
+									[
+										elm$html$Html$text(t.a.name)
+									])),
+								A2(
+								elm$html$Html$td,
+								_List_Nil,
+								_List_fromArray(
+									[
+										elm$html$Html$text(t.b)
+									]))
+							]));
+				},
+				A3(elm$core$List$map2, elm$core$Tuple$pair, nameList, roleList)));
+	});
+var elm$html$Html$br = _VirtualDom_node('br');
+var elm$html$Html$table = _VirtualDom_node('table');
 var author$project$Main$viewResultPage = function (model) {
 	return _List_fromArray(
 		[
-			elm$html$Html$text('result')
+			A2(
+			elm$html$Html$h1,
+			_List_Nil,
+			_List_fromArray(
+				[
+					elm$html$Html$text('Result')
+				])),
+			A2(elm$html$Html$br, _List_Nil, _List_Nil),
+			A2(
+			elm$html$Html$table,
+			_List_fromArray(
+				[
+					A2(elm$html$Html$Attributes$style, 'border', '1px solid #ccc')
+				]),
+			A2(author$project$Main$showTableData, model.records, model.roles))
 		]);
 };
 var author$project$Main$GoToResult = function (a) {
@@ -10213,7 +10286,6 @@ var author$project$Main$showList = function (records) {
 			}),
 		records);
 };
-var elm$html$Html$br = _VirtualDom_node('br');
 var author$project$Main$viewTopPage = function (model) {
 	return _List_fromArray(
 		[

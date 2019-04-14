@@ -197,7 +197,18 @@ viewTopPage model =
 
 viewResultPage : Model -> List (Html Msg)
 viewResultPage model =
-    [ text "result" ]
+    [ h1 [] [ text "Result" ]
+    , br [] []
+    , table [ style "border" "1px solid #ccc" ]
+        (showTableData model.records model.roles)
+    ]
+
+
+showTableData : List Record -> List String -> List (Html Msg)
+showTableData nameList roleList =
+    List.map2 Tuple.pair nameList roleList
+        |> List.map (\t -> tr [] [ td [] [ text (Tuple.first t).name ], td [] [ text (Tuple.second t) ] ])
+        |>  (::) (tr [] [th [] [ text "name"], th [] [text "role"]])  
 
 
 showList : List Record -> List (Html Msg)
