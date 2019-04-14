@@ -88,7 +88,7 @@ update msg model =
             ( { model
                 | records = Record True "" :: model.records
                 , roles =
-                    if List.length model.records <= 2 then
+                    if List.length model.records >= 2 then
                         "D" :: model.roles
 
                     else

@@ -10047,7 +10047,7 @@ var author$project$Main$update = F2(
 								elm$core$List$cons,
 								A2(author$project$Main$Record, true, ''),
 								model.records),
-							roles: (elm$core$List$length(model.records) <= 2) ? A2(elm$core$List$cons, 'D', model.roles) : model.roles
+							roles: (elm$core$List$length(model.records) >= 2) ? A2(elm$core$List$cons, 'D', model.roles) : model.roles
 						}),
 					elm$core$Platform$Cmd$none);
 			case 'ChangeName':
