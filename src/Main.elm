@@ -2,6 +2,7 @@ module Main exposing (main)
 
 import Browser
 import Browser.Navigation as Nav
+import Component.Checkbox
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onClick, onInput)
@@ -69,8 +70,8 @@ type Msg
     = LinkClicked Browser.UrlRequest
     | UrlChanged Url.Url
     | PlusClicked
-    | ChangeName String Int -- チェックボックスのテキストを変更したときに発動
-    | ChangeChecked Bool Int -- チェックボックスのチェックを変更したときに発動
+    | ChangeName Int String -- チェックボックスのテキストを変更したときに発動
+    | ChangeChecked Int Bool -- チェックボックスのチェックを変更したときに発動
     | ClickResult
     | GoToResult Time.Posix
 
@@ -102,10 +103,10 @@ update msg model =
             , Cmd.none
             )
 
-        ChangeName str index ->
+        ChangeName index str ->
             ( { model | records = alterRecordName str index model.records }, Cmd.none )
 
-        ChangeChecked bool index ->
+        ChangeChecked index bool ->
             ( { model | records = alterRecordChecked bool index model.records }, Cmd.none )
 
         ClickResult ->
@@ -228,10 +229,11 @@ viewResultPage model =
 
 showTableData : List Record -> List String -> List (Html Msg)
 showTableData recordList roleList =
-    let 
-        nameList = List.filter (\record -> record.checked) recordList
-                    |> List.map (\record -> record.name) 
-    in 
+    let
+        nameList =
+            List.filter (\record -> record.checked) recordList
+                |> List.map (\record -> record.name)
+    in
     List.map2 Tuple.pair nameList roleList
         |> List.map (\t -> tr [] [ td [] [ text (Tuple.first t) ], td [] [ text (Tuple.second t) ] ])
         |> (::) (tr [] [ th [] [ text "name" ], th [] [ text "role" ] ])
@@ -239,12 +241,4 @@ showTableData recordList roleList =
 
 showList : List Record -> List (Html Msg)
 showList records =
-    List.indexedMap (\i r -> checkbox r i) records
-
-
-checkbox : Record -> Int -> Html Msg
-checkbox record index =
-    div []
-        [ input [ type_ "checkbox", checked record.checked, onCheck (\b -> ChangeChecked b index) ] []
-        , input [ type_ "text", placeholder "name", onInput (\s -> ChangeName s index) ] []
-        ]
+    List.indexedMap (\i r -> Component.Checkbox.view (ChangeChecked i) (ChangeName i) r.checked) records
