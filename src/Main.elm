@@ -11,7 +11,7 @@ import Page.NotFound
 import Page.OmikujiResult
 import Random exposing (Seed, initialSeed)
 import Random.List exposing (shuffle)
-import Route exposing (Route)
+import Route exposing (Route, fromUrl, replaceUrl)
 import Task
 import Time exposing (..)
 import Url
@@ -53,7 +53,7 @@ type Page
 init : () -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
 init flags url key =
     Model key NotFound
-        |> goTo (Route.parse url)
+        |> goTo (Route.fromUrl url)
 
 
 
@@ -72,14 +72,19 @@ update msg model =
         LinkClicked urlRequest ->
             case urlRequest of
                 Browser.Internal url ->
-                    ( model, Nav.pushUrl model.key (Url.toString url) )
+                    case url.fragment of
+                        Nothing ->
+                            ( model, Cmd.none )
+
+                        Just _ ->
+                            ( model, Nav.pushUrl model.key (Url.toString url) )
 
                 Browser.External href ->
                     ( model, Nav.load href )
 
         -- URLが変更された直後に実行される
         UrlChanged url ->
-            goTo (Route.parse url) model
+            goTo (Route.fromUrl url) model
 
         -- Home ページのメッセージが来た時
         HomeMsg homeMsg ->

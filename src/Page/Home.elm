@@ -8,7 +8,7 @@ import Html.Events exposing (onClick)
 import Task
 import Time
 import Url
-import Url.Builder exposing (relative)
+import Url.Builder exposing (absolute, int, string)
 
 
 type alias Model =
@@ -70,7 +70,7 @@ update msg model =
             ( model, Task.perform GoToResult Time.now )
 
         GoToResult time ->
-            ( model, Nav.pushUrl model.key (relative [ "result?names=" ++ getEffectiveNames model ++ "&seed=" ++ String.fromInt (Time.posixToMillis time) ] []) )
+            ( model, Nav.replaceUrl model.key (absolute [ "#", "result" ] [ string "names" (getEffectiveNames model), int "seed" (Time.posixToMillis time) ]) )
 
 
 alterRecordName : String -> Int -> List Record -> List Record
