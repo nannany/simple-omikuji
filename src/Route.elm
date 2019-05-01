@@ -13,7 +13,15 @@ type Route
 
 fromUrl : Url -> Maybe Route
 fromUrl url =
-    { url | path = Maybe.withDefault "" url.fragment, fragment = Nothing }
+    let
+        tempList =
+            Maybe.withDefault "" url.fragment
+                |> String.split "?"
+
+        ( effectivePath, effectiveQuery ) =
+            ( List.head tempList, List.tail tempList )
+    in
+    { url | path = Maybe.withDefault "" effectivePath, query = List.head (Maybe.withDefault [] effectiveQuery), fragment = Nothing }
         |> Debug.log "url"
         |> Url.Parser.parse parser
 
@@ -21,8 +29,8 @@ fromUrl url =
 parser : Parser (Route -> a) a
 parser =
     oneOf
-        [ map Home (top <?> Q.string "names")
-        , map OmikujiResult (s "result" <?> Q.string "names" <?> Q.int "seed")
+        [ Url.Parser.map Home (top <?> Q.string "names")
+        , Url.Parser.map OmikujiResult (s "result" <?> Q.string "names" <?> Q.int "seed")
         ]
 
 

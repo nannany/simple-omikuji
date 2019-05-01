@@ -53,7 +53,8 @@ type Page
 init : () -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
 init flags url key =
     Model key NotFound
-        |> goTo (Route.fromUrl url)
+        |> Debug.log "model"
+        |> goTo (Route.fromUrl (Debug.log "org" url))
 
 
 
@@ -68,7 +69,7 @@ type Msg
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case msg of
+    case Debug.log "msg" msg of
         LinkClicked urlRequest ->
             case urlRequest of
                 Browser.Internal url ->
@@ -110,7 +111,7 @@ update msg model =
 
 goTo : Maybe Route -> Model -> ( Model, Cmd Msg )
 goTo maybeRoute model =
-    case maybeRoute of
+    case Debug.log "maybeRoute" maybeRoute of
         Nothing ->
             ( { model | page = NotFound }, Cmd.none )
 
