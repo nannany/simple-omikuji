@@ -6,8 +6,8 @@ import Url.Parser.Query as Q
 
 
 type Route
-    = Top
-    | Result (Maybe Int)
+    = Home (Maybe String)
+    | OmikujiResult (Maybe String) (Maybe Int)
 
 
 parse : Url -> Maybe Route
@@ -18,6 +18,6 @@ parse url =
 parser : Parser (Route -> a) a
 parser =
     oneOf
-        [ map Top top
-        , map Result (s "result" <?> Q.int "seed")
+        [ map Home (top <?> Q.string "names")
+        , map OmikujiResult (s "result" <?> Q.string "names" <?> Q.int "seed")
         ]

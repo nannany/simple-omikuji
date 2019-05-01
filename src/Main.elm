@@ -6,6 +6,9 @@ import Component.Checkbox
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onClick, onInput)
+import Page.Home
+import Page.NotFound
+import Page.OmikujiResult
 import Random exposing (Seed, initialSeed)
 import Random.List exposing (shuffle)
 import Route exposing (Route)
@@ -36,29 +39,20 @@ main =
 
 
 type alias Model =
-    { records : List Record
-    , roles : List String
-    , key : Nav.Key
-    , url : Url.Url
+    { key : Nav.Key
     , page : Page
     }
 
 
 type Page
     = NotFound
-    | TopPage
-    | ResultPage
-
-
-type alias Record =
-    { checked : Bool
-    , name : String
-    }
+    | HomePage Page.Home.Model
+    | OmikujiResultPage Page.OmikujiResult.Model
 
 
 init : () -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
 init flags url key =
-    Model [] [ "S", "P" ] key url TopPage
+    Model key NotFound
         |> goTo (Route.parse url)
 
 
@@ -69,11 +63,7 @@ init flags url key =
 type Msg
     = LinkClicked Browser.UrlRequest
     | UrlChanged Url.Url
-    | PlusClicked
-    | ChangeName Int String -- チェックボックスのテキストを変更したときに発動
-    | ChangeChecked Int Bool -- チェックボックスのチェックを変更したときに発動
-    | ClickResult
-    | GoToResult Time.Posix
+    | HomeMsg Page.Home.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -87,63 +77,30 @@ update msg model =
                 Browser.External href ->
                     ( model, Nav.load href )
 
+        -- URLが変更された直後に実行される
         UrlChanged url ->
             goTo (Route.parse url) model
 
-        PlusClicked ->
-            ( { model
-                | records = Record True "" :: model.records
-                , roles =
-                    if List.length model.records >= 2 then
-                        "D" :: model.roles
+        -- Home ページのメッセージが来た時
+        HomeMsg homeMsg ->
+            -- 現在表示しているページで場合分け
+            case model.page of
+                HomePage homeModel ->
+                    let
+                        ( newHomeModel, homeCmd ) =
+                            Page.Home.update homeMsg homeModel
+                    in
+                    ( { model | page = HomePage newHomeModel }
+                    , Cmd.map HomeMsg homeCmd
+                    )
 
-                    else
-                        model.roles
-              }
-            , Cmd.none
-            )
-
-        ChangeName index str ->
-            ( { model | records = alterRecordName str index model.records }, Cmd.none )
-
-        ChangeChecked index bool ->
-            ( { model | records = alterRecordChecked bool index model.records }, Cmd.none )
-
-        ClickResult ->
-            ( model, Task.perform GoToResult Time.now )
-
-        GoToResult time ->
-            ( model, Nav.pushUrl model.key (relative [ "result?seed=" ++ String.fromInt (Time.posixToMillis time) ] []) )
-
-
-alterRecordName : String -> Int -> List Record -> List Record
-alterRecordName str index targetLists =
-    List.indexedMap
-        (\i r ->
-            if i == index then
-                Record r.checked str
-
-            else
-                r
-        )
-        targetLists
-
-
-alterRecordChecked : Bool -> Int -> List Record -> List Record
-alterRecordChecked bool index targetLists =
-    List.indexedMap
-        (\i r ->
-            if i == index then
-                Record bool r.name
-
-            else
-                r
-        )
-        targetLists
+                _ ->
+                    ( model, Cmd.none )
 
 
 
 -- routing
+-- ここで初期化処理を走らせる
 
 
 goTo : Maybe Route -> Model -> ( Model, Cmd Msg )
@@ -152,17 +109,19 @@ goTo maybeRoute model =
         Nothing ->
             ( { model | page = NotFound }, Cmd.none )
 
-        Just Route.Top ->
-            ( { model | page = TopPage }, Cmd.none )
+        Just (Route.Home names) ->
+            let
+                ( homeModel, homeCmd ) =
+                    Page.Home.init names model.key
+            in
+            ( { model | page = HomePage homeModel }, Cmd.map HomeMsg homeCmd )
 
-        Just (Route.Result seed) ->
-            ( { model | page = ResultPage, roles = shuffleRole seed model.roles }, Cmd.none )
-
-
-shuffleRole : Maybe Int -> List String -> List String
-shuffleRole seed srcList =
-    Random.step (shuffle srcList) (initialSeed (Maybe.withDefault 0 seed))
-        |> Tuple.first
+        Just (Route.OmikujiResult names seed) ->
+            let
+                ( omikujiResultModel, omikujiResultCmd ) =
+                    Page.OmikujiResult.init names seed
+            in
+            ( { model | page = OmikujiResultPage omikujiResultModel }, omikujiResultCmd )
 
 
 
@@ -182,63 +141,15 @@ view : Model -> Browser.Document Msg
 view model =
     { title = "omikuji"
     , body =
-        case model.page of
+        [ case model.page of
             NotFound ->
-                viewNotFound
+                Page.NotFound.view
 
-            TopPage ->
-                viewTopPage model
+            HomePage homePageModel ->
+                Page.Home.view homePageModel
+                    |> Html.map HomeMsg
 
-            ResultPage ->
-                viewResultPage model
+            OmikujiResultPage omikujiResultPageModel ->
+                Page.OmikujiResult.view omikujiResultPageModel
+        ]
     }
-
-
-viewNotFound : List (Html Msg)
-viewNotFound =
-    [ h1 [ style "color" "red" ] [ text "404 Not Found!" ] ]
-
-
-viewTopPage : Model -> List (Html Msg)
-viewTopPage model =
-    [ h1 [] [ text "omikuji application" ]
-    , text "Click +, add user."
-    , br [] []
-    , button [ onClick PlusClicked ] [ text "+" ]
-    , p [] (showList model.records)
-    , button [ onClick ClickResult ] [ text "show result" ]
-    ]
-
-
-
--- resultページ表示用のview
-
-
-viewResultPage : Model -> List (Html Msg)
-viewResultPage model =
-    [ h1 [] [ text "Result" ]
-    , br [] []
-    , table [ style "border" "1px solid #ccc" ]
-        (showTableData model.records model.roles)
-    ]
-
-
-
--- resultページにて結果の表を表示するためのメソッド
-
-
-showTableData : List Record -> List String -> List (Html Msg)
-showTableData recordList roleList =
-    let
-        nameList =
-            List.filter (\record -> record.checked) recordList
-                |> List.map (\record -> record.name)
-    in
-    List.map2 Tuple.pair nameList roleList
-        |> List.map (\t -> tr [] [ td [] [ text (Tuple.first t) ], td [] [ text (Tuple.second t) ] ])
-        |> (::) (tr [] [ th [] [ text "name" ], th [] [ text "role" ] ])
-
-
-showList : List Record -> List (Html Msg)
-showList records =
-    List.indexedMap (\i r -> Component.Checkbox.view (ChangeChecked i) (ChangeName i) r.checked) records
