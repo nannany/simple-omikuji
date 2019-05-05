@@ -10746,7 +10746,7 @@ var author$project$Component$Checkbox$view = F4(
 					elm$html$Html$input,
 					_List_fromArray(
 						[
-							elm$html$Html$Attributes$class('input is-info is-small'),
+							elm$html$Html$Attributes$class('is-info is-small'),
 							elm$html$Html$Attributes$type_('text'),
 							elm$html$Html$Attributes$placeholder('name'),
 							elm$html$Html$Events$onInput(nameMsg),
@@ -10780,6 +10780,7 @@ var author$project$Page$Home$showList = function (records) {
 var elm$html$Html$br = _VirtualDom_node('br');
 var elm$html$Html$h1 = _VirtualDom_node('h1');
 var elm$html$Html$h2 = _VirtualDom_node('h2');
+var elm$html$Html$i = _VirtualDom_node('i');
 var elm$html$Html$label = _VirtualDom_node('label');
 var elm$html$Html$section = _VirtualDom_node('section');
 var author$project$Page$Home$view = function (model) {
@@ -10823,13 +10824,29 @@ var author$project$Page$Home$view = function (model) {
 						elm$html$Html$button,
 						_List_fromArray(
 							[
-								elm$html$Html$Attributes$class('button is-info is-small'),
+								elm$html$Html$Attributes$class('button is-info'),
 								elm$html$Html$Events$onClick(author$project$Page$Home$PlusClicked)
 							]),
 						_List_fromArray(
 							[
-								elm$html$Html$text('+')
+								A2(
+								elm$html$Html$span,
+								_List_fromArray(
+									[
+										elm$html$Html$Attributes$class('icon is-small')
+									]),
+								_List_fromArray(
+									[
+										A2(
+										elm$html$Html$i,
+										_List_fromArray(
+											[
+												elm$html$Html$Attributes$class('fas fa-plus')
+											]),
+										_List_Nil)
+									]))
 							])),
+						A2(elm$html$Html$br, _List_Nil, _List_Nil),
 						A2(elm$html$Html$br, _List_Nil, _List_Nil),
 						A2(
 						elm$html$Html$label,
@@ -10929,25 +10946,40 @@ var author$project$Page$OmikujiResult$showTableData = F2(
 var elm$html$Html$table = _VirtualDom_node('table');
 var author$project$Page$OmikujiResult$view = function (model) {
 	return A2(
-		elm$html$Html$div,
-		_List_Nil,
+		elm$html$Html$section,
+		_List_fromArray(
+			[
+				elm$html$Html$Attributes$class('section')
+			]),
 		_List_fromArray(
 			[
 				A2(
-				elm$html$Html$h1,
-				_List_Nil,
+				elm$html$Html$div,
 				_List_fromArray(
 					[
-						elm$html$Html$text('Result')
-					])),
-				A2(elm$html$Html$br, _List_Nil, _List_Nil),
-				A2(
-				elm$html$Html$table,
-				_List_fromArray(
-					[
-						A2(elm$html$Html$Attributes$style, 'border', '1px solid #ccc')
+						elm$html$Html$Attributes$class('container')
 					]),
-				A2(author$project$Page$OmikujiResult$showTableData, model.names, model.roles))
+				_List_fromArray(
+					[
+						A2(
+						elm$html$Html$h1,
+						_List_fromArray(
+							[
+								elm$html$Html$Attributes$class('title')
+							]),
+						_List_fromArray(
+							[
+								elm$html$Html$text('Result')
+							])),
+						A2(elm$html$Html$br, _List_Nil, _List_Nil),
+						A2(
+						elm$html$Html$table,
+						_List_fromArray(
+							[
+								elm$html$Html$Attributes$class('table is-bordered is-hoverable is-striped')
+							]),
+						A2(author$project$Page$OmikujiResult$showTableData, model.names, model.roles))
+					]))
 			]));
 };
 var author$project$Main$view = function (model) {

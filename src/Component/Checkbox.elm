@@ -9,5 +9,5 @@ view : (Bool -> msg) -> (String -> msg) -> Bool -> String -> Html msg
 view checkedMsg nameMsg isChecked name =
     div []
         [ input [ type_ "checkbox", checked isChecked, onCheck checkedMsg ] []
-        , input [ class "input is-info is-small", type_ "text", placeholder "name", onInput nameMsg, value name ] []
+        , input [ class "is-info is-small", type_ "text", placeholder "name", onInput nameMsg, value name ] []
         ]

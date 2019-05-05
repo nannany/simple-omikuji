@@ -59,11 +59,13 @@ shuffleRole seed srcList =
 
 view : Model -> Html msg
 view model =
-    div []
-        [ h1 [] [ text "Result" ]
-        , br [] []
-        , table [ style "border" "1px solid #ccc" ]
-            (showTableData model.names model.roles)
+    section [ class "section" ]
+        [ div [ class "container" ]
+            [ h1 [ class "title" ] [ text "Result" ]
+            , br [] []
+            , table [ class "table is-bordered is-hoverable is-striped" ]
+                (showTableData model.names model.roles)
+            ]
         ]
 
 
