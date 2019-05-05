@@ -4,6 +4,7 @@ import Browser
 import Browser.Navigation as Nav
 import Component.Checkbox
 import Html exposing (..)
+import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import Task
 import Time
@@ -108,13 +109,16 @@ getEffectiveNames model =
 
 view : Model -> Html Msg
 view model =
-    div []
-        [ h1 [] [ text "omikuji application" ]
-        , text "Click +, add user."
-        , br [] []
-        , button [ onClick PlusClicked ] [ text "+" ]
-        , p [] (showList model.records)
-        , button [ onClick ClickResult ] [ text "show result" ]
+    section [ class "section" ]
+        [ div [ class "container" ]
+            [ h1 [ class "title" ] [ text "omikuji application" ]
+            , h2 [ class "subtitle" ] [ text "Click + button and add user." ]
+            , button [ class "button is-info is-small", onClick PlusClicked ] [ text "+" ]
+            , br [][]
+            , label [ class "checkbox" ] (showList model.records)
+            , br [][]
+            , button [ class "button is-primary is-medium", onClick ClickResult ] [ text "show result" ]
+            ]
         ]
 
 

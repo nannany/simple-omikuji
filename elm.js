@@ -10746,6 +10746,7 @@ var author$project$Component$Checkbox$view = F4(
 					elm$html$Html$input,
 					_List_fromArray(
 						[
+							elm$html$Html$Attributes$class('input is-info is-small'),
 							elm$html$Html$Attributes$type_('text'),
 							elm$html$Html$Attributes$placeholder('name'),
 							elm$html$Html$Events$onInput(nameMsg),
@@ -10778,44 +10779,77 @@ var author$project$Page$Home$showList = function (records) {
 };
 var elm$html$Html$br = _VirtualDom_node('br');
 var elm$html$Html$h1 = _VirtualDom_node('h1');
+var elm$html$Html$h2 = _VirtualDom_node('h2');
+var elm$html$Html$label = _VirtualDom_node('label');
+var elm$html$Html$section = _VirtualDom_node('section');
 var author$project$Page$Home$view = function (model) {
 	return A2(
-		elm$html$Html$div,
-		_List_Nil,
+		elm$html$Html$section,
+		_List_fromArray(
+			[
+				elm$html$Html$Attributes$class('section')
+			]),
 		_List_fromArray(
 			[
 				A2(
-				elm$html$Html$h1,
-				_List_Nil,
+				elm$html$Html$div,
 				_List_fromArray(
 					[
-						elm$html$Html$text('omikuji application')
-					])),
-				elm$html$Html$text('Click +, add user.'),
-				A2(elm$html$Html$br, _List_Nil, _List_Nil),
-				A2(
-				elm$html$Html$button,
-				_List_fromArray(
-					[
-						elm$html$Html$Events$onClick(author$project$Page$Home$PlusClicked)
+						elm$html$Html$Attributes$class('container')
 					]),
 				_List_fromArray(
 					[
-						elm$html$Html$text('+')
-					])),
-				A2(
-				elm$html$Html$p,
-				_List_Nil,
-				author$project$Page$Home$showList(model.records)),
-				A2(
-				elm$html$Html$button,
-				_List_fromArray(
-					[
-						elm$html$Html$Events$onClick(author$project$Page$Home$ClickResult)
-					]),
-				_List_fromArray(
-					[
-						elm$html$Html$text('show result')
+						A2(
+						elm$html$Html$h1,
+						_List_fromArray(
+							[
+								elm$html$Html$Attributes$class('title')
+							]),
+						_List_fromArray(
+							[
+								elm$html$Html$text('omikuji application')
+							])),
+						A2(
+						elm$html$Html$h2,
+						_List_fromArray(
+							[
+								elm$html$Html$Attributes$class('subtitle')
+							]),
+						_List_fromArray(
+							[
+								elm$html$Html$text('Click + button and add user.')
+							])),
+						A2(
+						elm$html$Html$button,
+						_List_fromArray(
+							[
+								elm$html$Html$Attributes$class('button is-info is-small'),
+								elm$html$Html$Events$onClick(author$project$Page$Home$PlusClicked)
+							]),
+						_List_fromArray(
+							[
+								elm$html$Html$text('+')
+							])),
+						A2(elm$html$Html$br, _List_Nil, _List_Nil),
+						A2(
+						elm$html$Html$label,
+						_List_fromArray(
+							[
+								elm$html$Html$Attributes$class('checkbox')
+							]),
+						author$project$Page$Home$showList(model.records)),
+						A2(elm$html$Html$br, _List_Nil, _List_Nil),
+						A2(
+						elm$html$Html$button,
+						_List_fromArray(
+							[
+								elm$html$Html$Attributes$class('button is-primary is-medium'),
+								elm$html$Html$Events$onClick(author$project$Page$Home$ClickResult)
+							]),
+						_List_fromArray(
+							[
+								elm$html$Html$text('show result')
+							]))
 					]))
 			]));
 };
