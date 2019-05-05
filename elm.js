@@ -6037,20 +6037,18 @@ var author$project$Page$OmikujiResult$init = F2(
 			A2(author$project$Page$OmikujiResult$Model, initialRoles, initialNames),
 			elm$core$Platform$Cmd$none);
 	});
-var elm$core$Debug$log = _Debug_log;
 var elm$core$Platform$Cmd$map = _Platform_map;
 var author$project$Main$goTo = F2(
 	function (maybeRoute, model) {
-		var _n0 = A2(elm$core$Debug$log, 'maybeRoute', maybeRoute);
-		if (_n0.$ === 'Nothing') {
+		if (maybeRoute.$ === 'Nothing') {
 			return _Utils_Tuple2(
 				_Utils_update(
 					model,
 					{page: author$project$Main$NotFound}),
 				elm$core$Platform$Cmd$none);
 		} else {
-			if (_n0.a.$ === 'Home') {
-				var names = _n0.a.a;
+			if (maybeRoute.a.$ === 'Home') {
+				var names = maybeRoute.a.a;
 				var _n1 = A2(author$project$Page$Home$init, names, model.key);
 				var homeModel = _n1.a;
 				var homeCmd = _n1.b;
@@ -6062,7 +6060,7 @@ var author$project$Main$goTo = F2(
 						}),
 					A2(elm$core$Platform$Cmd$map, author$project$Main$HomeMsg, homeCmd));
 			} else {
-				var _n2 = _n0.a;
+				var _n2 = maybeRoute.a;
 				var names = _n2.a;
 				var seed = _n2.b;
 				var _n3 = A2(author$project$Page$OmikujiResult$init, names, seed);
@@ -6805,18 +6803,16 @@ var author$project$Route$fromUrl = function (url) {
 	return A2(
 		elm$url$Url$Parser$parse,
 		author$project$Route$parser,
-		A2(
-			elm$core$Debug$log,
-			'url',
-			_Utils_update(
-				url,
-				{
-					fragment: elm$core$Maybe$Nothing,
-					path: A2(elm$core$Maybe$withDefault, '', effectivePath),
-					query: elm$core$List$head(
-						A2(elm$core$Maybe$withDefault, _List_Nil, effectiveQuery))
-				})));
+		_Utils_update(
+			url,
+			{
+				fragment: elm$core$Maybe$Nothing,
+				path: A2(elm$core$Maybe$withDefault, '', effectivePath),
+				query: elm$core$List$head(
+					A2(elm$core$Maybe$withDefault, _List_Nil, effectiveQuery))
+			}));
 };
+var elm$core$Debug$log = _Debug_log;
 var author$project$Main$init = F3(
 	function (flags, url, key) {
 		return A2(
@@ -10521,8 +10517,7 @@ var elm$url$Url$Builder$string = F2(
 	});
 var author$project$Page$Home$update = F2(
 	function (msg, model) {
-		var _n0 = A2(elm$core$Debug$log, 'msg', msg);
-		switch (_n0.$) {
+		switch (msg.$) {
 			case 'PlusClicked':
 				return _Utils_Tuple2(
 					_Utils_update(
@@ -10535,8 +10530,8 @@ var author$project$Page$Home$update = F2(
 						}),
 					elm$core$Platform$Cmd$none);
 			case 'ChangeName':
-				var index = _n0.a;
-				var str = _n0.b;
+				var index = msg.a;
+				var str = msg.b;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
@@ -10545,8 +10540,8 @@ var author$project$Page$Home$update = F2(
 						}),
 					elm$core$Platform$Cmd$none);
 			case 'ChangeChecked':
-				var index = _n0.a;
-				var bool = _n0.b;
+				var index = msg.a;
+				var bool = msg.b;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
@@ -10559,7 +10554,7 @@ var author$project$Page$Home$update = F2(
 					model,
 					A2(elm$core$Task$perform, author$project$Page$Home$GoToResult, elm$time$Time$now));
 			default:
-				var time = _n0.a;
+				var time = msg.a;
 				return _Utils_Tuple2(
 					model,
 					A2(
@@ -10630,10 +10625,9 @@ var elm$url$Url$toString = function (url) {
 };
 var author$project$Main$update = F2(
 	function (msg, model) {
-		var _n0 = A2(elm$core$Debug$log, 'msg', msg);
-		switch (_n0.$) {
+		switch (msg.$) {
 			case 'LinkClicked':
-				var urlRequest = _n0.a;
+				var urlRequest = msg.a;
 				if (urlRequest.$ === 'Internal') {
 					var url = urlRequest.a;
 					var _n2 = url.fragment;
@@ -10654,13 +10648,13 @@ var author$project$Main$update = F2(
 						elm$browser$Browser$Navigation$load(href));
 				}
 			case 'UrlChanged':
-				var url = _n0.a;
+				var url = msg.a;
 				return A2(
 					author$project$Main$goTo,
 					author$project$Route$fromUrl(url),
 					model);
 			default:
-				var homeMsg = _n0.a;
+				var homeMsg = msg.a;
 				var _n3 = model.page;
 				if (_n3.$ === 'HomePage') {
 					var homeModel = _n3.a;
