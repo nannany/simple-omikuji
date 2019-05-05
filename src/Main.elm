@@ -69,7 +69,7 @@ type Msg
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case Debug.log "msg" msg of
+    case msg of
         LinkClicked urlRequest ->
             case urlRequest of
                 Browser.Internal url ->
@@ -111,7 +111,7 @@ update msg model =
 
 goTo : Maybe Route -> Model -> ( Model, Cmd Msg )
 goTo maybeRoute model =
-    case Debug.log "maybeRoute" maybeRoute of
+    case maybeRoute of
         Nothing ->
             ( { model | page = NotFound }, Cmd.none )
 

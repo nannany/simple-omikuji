@@ -22,7 +22,6 @@ fromUrl url =
             ( List.head tempList, List.tail tempList )
     in
     { url | path = Maybe.withDefault "" effectivePath, query = List.head (Maybe.withDefault [] effectiveQuery), fragment = Nothing }
-        |> Debug.log "url"
         |> Url.Parser.parse parser
 
 
