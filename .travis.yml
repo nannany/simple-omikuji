@@ -3,5 +3,5 @@ node_js:
   - 10
 before_script:
   - npm install -g elm@0.19
-  - npm install -g elm-test@0.19-rev6
+  - npm install -g elm-test
 script: npm-test
