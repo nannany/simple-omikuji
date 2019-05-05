@@ -6812,17 +6812,12 @@ var author$project$Route$fromUrl = function (url) {
 					A2(elm$core$Maybe$withDefault, _List_Nil, effectiveQuery))
 			}));
 };
-var elm$core$Debug$log = _Debug_log;
 var author$project$Main$init = F3(
 	function (flags, url, key) {
 		return A2(
 			author$project$Main$goTo,
-			author$project$Route$fromUrl(
-				A2(elm$core$Debug$log, 'org', url)),
-			A2(
-				elm$core$Debug$log,
-				'model',
-				A2(author$project$Main$Model, key, author$project$Main$NotFound)));
+			author$project$Route$fromUrl(url),
+			A2(author$project$Main$Model, key, author$project$Main$NotFound));
 	});
 var elm$core$Platform$Sub$batch = _Platform_batch;
 var elm$core$Platform$Sub$none = elm$core$Platform$Sub$batch(_List_Nil);

@@ -53,8 +53,7 @@ type Page
 init : () -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
 init flags url key =
     Model key NotFound
-        |> Debug.log "model"
-        |> goTo (Route.fromUrl (Debug.log "org" url))
+        |> goTo (Route.fromUrl url)
 
 
 
