@@ -76,7 +76,7 @@ update msg model =
                 targetStr =
                     List.map2 Tuple.pair model.names model.roles
                         |> List.map (\t -> "* " ++ Tuple.first t ++ ": " ++ Tuple.second t)
-                        |> String.join ""
+                        |> String.join "\r\n"
             in
             ( model, copy targetStr )
 

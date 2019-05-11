@@ -6725,7 +6725,7 @@ var author$project$Page$OmikujiResult$update = F2(
 	function (msg, model) {
 		var targetStr = A2(
 			elm$core$String$join,
-			'',
+			'\r\n',
 			A2(
 				elm$core$List$map,
 				function (t) {

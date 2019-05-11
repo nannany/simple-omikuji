@@ -12,7 +12,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
   <script src="elm.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/copy-to-clipboard@3.2.0/index.min.js"></script>
 
 </head>
 
@@ -21,7 +20,12 @@
     var app = Elm.Main.init();
 
     app.ports.copy.subscribe(function (data) {
-      copy(data);
+      var ta = document.createElement("textarea")
+      ta.value = data
+      document.body.appendChild(ta)
+      ta.select()
+      document.execCommand("copy")
+      ta.parentElement.removeChild(ta)
     });
   </script>
 </body>
