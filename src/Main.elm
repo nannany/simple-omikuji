@@ -64,6 +64,7 @@ type Msg
     = LinkClicked Browser.UrlRequest
     | UrlChanged Url.Url
     | HomeMsg Page.Home.Msg
+    | OmikujiResultMsg Page.OmikujiResult.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -97,6 +98,22 @@ update msg model =
                     in
                     ( { model | page = HomePage newHomeModel }
                     , Cmd.map HomeMsg homeCmd
+                    )
+
+                _ ->
+                    ( model, Cmd.none )
+
+        -- OmikujiResult ページのメッセージが来た時
+        OmikujiResultMsg omikujiResultMsg ->
+            -- 現在表示しているページで場合分け
+            case model.page of
+                OmikujiResultPage omikujiResultModel ->
+                    let
+                        ( newOmikujiResultModel, omikujiResultCmd ) =
+                            Page.OmikujiResult.update omikujiResultMsg omikujiResultModel
+                    in
+                    ( { model | page = OmikujiResultPage newOmikujiResultModel }
+                    , Cmd.map OmikujiResultMsg omikujiResultCmd
                     )
 
                 _ ->
@@ -156,5 +173,6 @@ view model =
 
             OmikujiResultPage omikujiResultPageModel ->
                 Page.OmikujiResult.view omikujiResultPageModel
+                    |> Html.map OmikujiResultMsg
         ]
     }

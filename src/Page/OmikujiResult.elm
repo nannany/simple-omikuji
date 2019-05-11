@@ -1,7 +1,8 @@
-module Page.OmikujiResult exposing (Model, init, view)
+port module Page.OmikujiResult exposing (Model, Msg, copy, init, update, view)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (onClick)
 import Random exposing (Seed, initialSeed)
 import Random.List exposing (shuffle)
 
@@ -53,11 +54,39 @@ shuffleRole seed srcList =
 
 
 
+--update
+
+
+type Msg
+    = Copy
+
+
+
+-- JavaScriptにクリップボードへのコピーを依頼するコマンド
+
+
+port copy : String -> Cmd msg
+
+
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg model =
+    case msg of
+        Copy ->
+            let
+                targetStr =
+                    List.map2 Tuple.pair model.names model.roles
+                        |> List.map (\t -> "* " ++ Tuple.first t ++ ": " ++ Tuple.second t)
+                        |> String.join ""
+            in
+            ( model, copy targetStr )
+
+
+
 -- clipboard copyとかすることになればupdate書く必要あり。
 --view
 
 
-view : Model -> Html msg
+view : Model -> Html Msg
 view model =
     section [ class "section" ]
         [ div [ class "container" ]
@@ -65,6 +94,10 @@ view model =
             , br [] []
             , table [ class "table is-bordered is-hoverable is-striped" ]
                 (showTableData model.names model.roles)
+            , button [ class "button is-info", onClick Copy ]
+                [ span [ class "icon" ]
+                    [ i [ class "fas fa-clipboard" ] [] ]
+                ]
             ]
         ]
 
